@@ -1,13 +1,11 @@
-import os
 import logging
 import asyncio
 import random
 import ssl
 import certifi
-from typing import Optional, Dict, Any, Union, List, Callable
-from datetime import datetime
+from typing import Optional, Dict, Callable
 
-from aiogram import Bot, Dispatcher, types, F
+from aiogram import Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
