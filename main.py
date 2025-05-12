@@ -55,7 +55,7 @@ async def send_message_with_cleanup(chat_id: int, text: str, reply_markup: Optio
         raise
 
 
-async def make_api_request(session, url, max_retries=3, retry_delay=1):
+async def make_api_request(url, max_retries=3, retry_delay=1):
     ssl_context = ssl.create_default_context(cafile=certifi.where())
     connector = aiohttp.TCPConnector(ssl=ssl_context)
     timeout = ClientTimeout(total=30)
@@ -127,9 +127,9 @@ async def process_search_query(message: types.Message, state: FSMContext):
     if not message or not message.text:
         return
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         url = f"{TMDB_BASE_URL}/search/multi?api_key={TMDB_API_KEY}&language=ru-RU&query={message.text}"
-        data = await make_api_request(session, url)
+        data = await make_api_request(url)
 
         if not data or not isinstance(data, dict) or not data.get("results"):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -146,10 +146,10 @@ async def process_search_query(message: types.Message, state: FSMContext):
         total_pages = len(results)
 
         await state.update_data(search_results=results, current_page=0, total_pages=total_pages, content_type="search")
-        await show_search_results(message.chat.id, results[0], "search", 0, total_pages)
+        await show_search_results(message.chat.id, results[0], 0, total_pages)
 
 
-async def show_search_results(chat_id: int, item: dict, content_type: str, current_page: int, total_pages: int):
+async def show_search_results(chat_id: int, item: dict, current_page: int, total_pages: int):
     if not isinstance(item, dict) or not item.get("id"):
         return
 
@@ -244,9 +244,9 @@ async def show_popular_movies(callback: types.CallbackQuery, state: FSMContext):
     if not callback.message:
         return
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         url = f"{TMDB_BASE_URL}/movie/popular?api_key={TMDB_API_KEY}&language=ru-RU&page=1"
-        data = await make_api_request(session, url)
+        data = await make_api_request(url)
 
         if not data or not isinstance(data, dict) or not data.get("results"):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -269,9 +269,9 @@ async def show_popular_tv(callback: types.CallbackQuery, state: FSMContext):
     if not callback.message:
         return
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         url = f"{TMDB_BASE_URL}/tv/popular?api_key={TMDB_API_KEY}&language=ru-RU&page=1"
-        data = await make_api_request(session, url)
+        data = await make_api_request(url)
 
         if not data or not isinstance(data, dict) or not data.get("results"):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -515,10 +515,10 @@ async def show_random_movie(callback: types.CallbackQuery):
     if not callback.message:
         return
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         page = random.randint(1, 500)
         url = f"{TMDB_BASE_URL}/movie/popular?api_key={TMDB_API_KEY}&language=ru-RU&page={page}"
-        data = await make_api_request(session, url)
+        data = await make_api_request(url)
 
         if not data or not isinstance(data, dict) or not data.get("results"):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -563,10 +563,10 @@ async def show_random_tv(callback: types.CallbackQuery):
     if not callback.message:
         return
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         page = random.randint(1, 500)
         url = f"{TMDB_BASE_URL}/tv/popular?api_key={TMDB_API_KEY}&language=ru-RU&page={page}"
-        data = await make_api_request(session, url)
+        data = await make_api_request(url)
 
         if not data or not isinstance(data, dict) or not data.get("results"):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -616,9 +616,9 @@ async def show_similar_movies(callback: types.CallbackQuery, state: FSMContext):
     except (ValueError, IndexError):
         return
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         url = f"{TMDB_BASE_URL}/movie/{movie_id}/similar?api_key={TMDB_API_KEY}&language=ru-RU&page=1"
-        data = await make_api_request(session, url)
+        data = await make_api_request(url)
 
         if not data or not isinstance(data, dict) or not data.get("results"):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -682,9 +682,9 @@ async def add_to_favorites(callback: types.CallbackQuery):
     except (ValueError, IndexError):
         return
 
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession():
         url = f"{TMDB_BASE_URL}/movie/{movie_id}?api_key={TMDB_API_KEY}&language=ru-RU"
-        data = await make_api_request(session, url)
+        data = await make_api_request(url)
 
         if not data or not isinstance(data, dict):
             await callback.answer("❌ Ошибка при добавлении в избранное")

@@ -2,6 +2,7 @@ import sqlite3
 import logging
 from typing import List, Optional, Tuple
 
+
 def get_db_connection():
     try:
         conn = sqlite3.connect('movie_bot.db')
@@ -10,6 +11,7 @@ def get_db_connection():
     except Exception as e:
         logging.error(f"Error connecting to database: {e}")
         raise
+
 
 def init_db():
     conn = get_db_connection()
@@ -27,6 +29,7 @@ def init_db():
     finally:
         conn.close()
 
+
 def add_favorite(user_id: int, movie_id: int, title: str, poster_path: str) -> bool:
     try:
         conn = get_db_connection()
@@ -41,6 +44,7 @@ def add_favorite(user_id: int, movie_id: int, title: str, poster_path: str) -> b
         return False
     finally:
         conn.close()
+
 
 def remove_favorite(user_id: int, movie_id: int) -> bool:
     try:
@@ -57,6 +61,7 @@ def remove_favorite(user_id: int, movie_id: int) -> bool:
     finally:
         conn.close()
 
+
 def get_favorites(user_id: int) -> List[Tuple]:
     try:
         conn = get_db_connection()
@@ -71,4 +76,5 @@ def get_favorites(user_id: int) -> List[Tuple]:
     finally:
         conn.close()
 
-init_db() 
+
+init_db()
